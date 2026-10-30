@@ -58,7 +58,9 @@ LinkPLCByMQTT/
 `FMQTTConnectOptions`（即 `InitMQTTConnectionWithOptions` / `ConnectToMQTTWithOptions`）的 TLS 字段：
 
 - `bUseTLS` — 启用 TLS 加密（端口一般为 8883）
-- `CACertPath` — CA 证书（PEM 文件**绝对路径**），用于校验 broker 证书。自签名 broker 必须提供其 CA 文件，否则握手被拒。留空时回退到 OpenSSL 默认证书路径（`MOSQ_OPT_TLS_USE_OS_CERTS`）——注意 **Windows 上默认路径通常不完整**（不读 Windows 系统证书库），公网 broker（emqx 等）建议显式给一个公共 CA bundle（如 Git 自带的 `mingw64/etc/ssl/certs/ca-bundle.crt` 或 [curl 维护的 cacert.pem](https://curl.se/docs/caextract.html)）
+- `CACertPath` — CA 证书（PEM 文件路径），用于校验 broker 证书。**留空时自动使用插件内置的 Mozilla 公共 CA bundle**（`Resources/Certificates/cacert.pem`，经 Build.cs `RuntimeDependencies` 部署到 `Binaries/Win64/Certificates/`，**打包产物自动携带**，公网 broker 开箱即用）；自签名 broker 必须显式提供其 CA 文件
+- `CACertPem` — CA 证书的 **PEM 文本内容**（优先级高于 `CACertPath`）。运行时写入 `Saved/LinkPLCByMQTT/Certificates/` 缓存文件后使用——证书可以放在 ini / DataTable / 字符串常量里随包分发、运行时热替换，**完全不依赖文件部署**
+- 证书工具：`GetBundledCACertPath()` 返回内置 bundle 路径；`EnumerateCACertificates()` 枚举内置 bundle + 项目根 `Certificates/` 约定目录下的所有证书（`.pem/.crt/.cer`），供"逐个证书试连"类测试工具使用
 - `bAllowInsecure` — 跳过**全部**证书校验（证书链 + 主机名），仅限调试，公网慎用
 - `ClientCertPath` / `ClientKeyPath` — 双向认证（mTLS）用的客户端证书/私钥（PEM），不需要则留空
 
@@ -103,7 +105,7 @@ Settings.Port = 8883;
 Settings.ClientId = TEXT("ue-client-01");   // 持久会话时必须固定
 Settings.KeepAliveSeconds = 60;
 Settings.bUseTLS = true;
-Settings.CACertPath = TEXT("C:/certs/ca-bundle.crt");  // 自签 broker 给它的 CA；公网 broker 给公共 CA bundle（Win 上不建议留空）
+Settings.CACertPath = TEXT("C:/certs/ca-bundle.crt");  // 自签 broker 给它的 CA；公网 broker 可留空用插件内置 bundle
 Settings.bCleanSession = true;              // false = 持久会话
 // Settings.bUseLWT = true; Settings.LWTTopic = ...; Settings.LWTPayload = ...;
 

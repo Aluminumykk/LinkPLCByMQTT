@@ -71,6 +71,12 @@ public class LinkPLCByMQTTLibrary : ModuleRules
 				Path.Combine(OpenSSLDir, "bin", "Win64", "libssl-3-x64.dll"));
 			RuntimeDependencies.Add(Path.Combine(BinDir, "libcrypto-3-x64.dll"),
 				Path.Combine(OpenSSLDir, "bin", "Win64", "libcrypto-3-x64.dll"));
+
+			// 内置 Mozilla 公共 CA bundle（cacert.pem，随插件打包部署）：
+			// CACertPath 留空时由主模块回退到此文件，公网 broker 开箱即用
+			string CertBinDir = Path.Combine(BinDir, "Certificates");
+			RuntimeDependencies.Add(Path.Combine(CertBinDir, "cacert.pem"),
+				Path.Combine(PluginDirectory, "Resources", "Certificates", "cacert.pem"));
 		}
 	}
 }

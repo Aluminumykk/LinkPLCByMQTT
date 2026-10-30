@@ -20,6 +20,7 @@ namespace
         Settings.bLWTRetain = Options.bLWTRetain;
         Settings.bUseTLS = Options.bUseTLS;
         Settings.CACertPath = Options.CACertPath;
+        Settings.CACertPem = Options.CACertPem;
         Settings.ClientCertPath = Options.ClientCertPath;
         Settings.ClientKeyPath = Options.ClientKeyPath;
         Settings.bAllowInsecure = Options.bAllowInsecure;
@@ -145,4 +146,14 @@ bool ULinkPLCByMQTTBPLibrary::TryReadMQTTString(FString& OutTopic, FString& OutM
         OutMessage.Empty();
     }
     return true;
+}
+
+FString ULinkPLCByMQTTBPLibrary::GetBundledCACertPath()
+{
+    return FLinkPLCByMQTTManager::GetBundledCACertPath();
+}
+
+TArray<FString> ULinkPLCByMQTTBPLibrary::EnumerateCACertificates()
+{
+    return FLinkPLCByMQTTManager::EnumerateCACertificates();
 }

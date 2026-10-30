@@ -121,4 +121,12 @@ public:
     /** 取出一条入站消息（字符串便捷版，按 UTF-8 解码） */
     UFUNCTION(BlueprintCallable, Category = "LinkPLCByMQTT")
     static bool TryReadMQTTString(FString& OutTopic, FString& OutMessage, int32& OutQoS, bool& bOutRetain, int32 ConnectionId = 0);
+
+    /** 插件内置 Mozilla 公共 CA bundle 路径（CACertPath 留空时的自动回退；未部署时返回空串） */
+    UFUNCTION(BlueprintCallable, Category = "LinkPLCByMQTT")
+    static FString GetBundledCACertPath();
+
+    /** 枚举可用 CA 证书（内置 bundle + 项目根 Certificates/ 目录），供逐个证书试连的测试工具使用 */
+    UFUNCTION(BlueprintCallable, Category = "LinkPLCByMQTT")
+    static TArray<FString> EnumerateCACertificates();
 };

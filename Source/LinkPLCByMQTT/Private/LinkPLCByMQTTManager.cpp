@@ -1,6 +1,10 @@
 #include "LinkPLCByMQTTManager.h"
 #include "LinkPLCByMQTT.h"
 #include "Containers/StringConv.h"
+#include "Misc/Paths.h"
+#include "Misc/FileHelper.h"
+#include "HAL/FileManager.h"
+#include "Interfaces/IPluginManager.h"
 
 THIRD_PARTY_INCLUDES_START
 #include "mosquitto.h"
@@ -53,6 +57,23 @@ namespace
     FString MQTTErrorText(int32 ReturnCode)
     {
         return FString(ANSI_TO_TCHAR(mosquitto_strerror(ReturnCode)));
+    }
+
+    /** 把 PEM 文本写到 Saved 下的缓存文件（按内容哈希命名，相同内容复用），供 libmosquitto 按路径读取。 */
+    FString WritePemToSavedCache(const FString& PemContent, const TCHAR* Tag)
+    {
+        const FString Dir = FPaths::ProjectSavedDir() / TEXT("LinkPLCByMQTT") / TEXT("Certificates");
+        IFileManager::Get().MakeDirectory(*Dir, /*Tree=*/true);
+        const FString Path = Dir / FString::Printf(TEXT("%s_%08x.pem"), Tag, GetTypeHash(PemContent));
+        if (!FPaths::FileExists(Path))
+        {
+            // PEM 是 ASCII 文本，强制 ANSI 写出，避免 BOM 干扰 OpenSSL 解析
+            if (!FFileHelper::SaveStringToFile(PemContent, *Path, FFileHelper::EEncodingOptions::ForceAnsi))
+            {
+                return FString();
+            }
+        }
+        return Path;
     }
 
     /** 取连接（全局锁仅覆盖查找）。失败时写 OutErrorMessage 并返回 nullptr。 */
@@ -207,11 +228,30 @@ int32 FLinkPLCByMQTTManager::CreateMQTTConnectionWithSettings(const FMQTTConnect
     // TLS 必须在 connect 之前设置；CA/客户端证书为 PEM 文件路径
     if (Settings.bUseTLS)
     {
-        // 注意：全部证书路径为空时不能调 mosquitto_tls_set（会返回 MOSQ_ERR_INVAL），
-        // 但此时必须设置 MOSQ_OPT_TLS_USE_OS_CERTS——libmosquitto 只有在
+        // CA 解析优先级：CACertPem 文本 > CACertPath 显式路径 > 插件内置公共 CA bundle。
+        // 三者皆无时回退 MOSQ_OPT_TLS_USE_OS_CERTS——libmosquitto 只有在
         // cafile/capath/psk/os_certs 任一存在时才创建 SSL_CTX，否则退化为明文 TCP
         // （TLS 端口上会握手失败 "wrong version number"）。
-        const bool bHasCertPaths = !Settings.CACertPath.IsEmpty()
+        FString ResolvedCA;
+        if (!Settings.CACertPem.IsEmpty())
+        {
+            ResolvedCA = WritePemToSavedCache(Settings.CACertPem, TEXT("ca"));
+            if (ResolvedCA.IsEmpty())
+            {
+                OutErrorMessage = TEXT("Failed to write CACertPem to Saved cache file.");
+                return -1;
+            }
+        }
+        else if (!Settings.CACertPath.IsEmpty())
+        {
+            ResolvedCA = Settings.CACertPath;
+        }
+        else
+        {
+            ResolvedCA = GetBundledCACertPath();
+        }
+
+        const bool bHasCertPaths = !ResolvedCA.IsEmpty()
             || !Settings.ClientCertPath.IsEmpty() || !Settings.ClientKeyPath.IsEmpty();
         if (!bHasCertPaths)
         {
@@ -219,11 +259,11 @@ int32 FLinkPLCByMQTTManager::CreateMQTTConnectionWithSettings(const FMQTTConnect
         }
         if (bHasCertPaths)
         {
-            auto CACertAnsi = StringCast<ANSICHAR>(*Settings.CACertPath);
+            auto CACertAnsi = StringCast<ANSICHAR>(*ResolvedCA);
             auto ClientCertAnsi = StringCast<ANSICHAR>(*Settings.ClientCertPath);
             auto ClientKeyAnsi = StringCast<ANSICHAR>(*Settings.ClientKeyPath);
             const int Rc = mosquitto_tls_set(Entry->Mosq,
-                Settings.CACertPath.IsEmpty() ? nullptr : CACertAnsi.Get(), nullptr,
+                ResolvedCA.IsEmpty() ? nullptr : CACertAnsi.Get(), nullptr,
                 Settings.ClientCertPath.IsEmpty() ? nullptr : ClientCertAnsi.Get(),
                 Settings.ClientKeyPath.IsEmpty() ? nullptr : ClientKeyAnsi.Get(),
                 nullptr);
@@ -506,4 +546,42 @@ bool FLinkPLCByMQTTManager::IsDefaultConnectionActive()
 void FLinkPLCByMQTTManager::CloseDefaultConnection()
 {
     CloseMQTTConnection(0);
+}
+
+FString FLinkPLCByMQTTManager::GetBundledCACertPath()
+{
+    const TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(TEXT("LinkPLCByMQTT"));
+    if (!Plugin.IsValid())
+    {
+        return FString();
+    }
+    // 由 LinkPLCByMQTTLibrary.Build.cs 的 RuntimeDependencies 部署（编辑器与打包产物一致）
+    const FString Path = Plugin->GetBaseDir() / TEXT("Binaries/Win64/Certificates/cacert.pem");
+    return FPaths::FileExists(Path) ? Path : FString();
+}
+
+TArray<FString> FLinkPLCByMQTTManager::EnumerateCACertificates()
+{
+    TArray<FString> Result;
+
+    if (const FString Bundled = GetBundledCACertPath(); !Bundled.IsEmpty())
+    {
+        Result.Add(Bundled);
+    }
+
+    // 项目根约定目录：<项目>/Certificates/ 下的 .pem/.crt/.cer
+    const FString ProjectCertDir = FPaths::ProjectDir() / TEXT("Certificates");
+    if (FPaths::DirectoryExists(ProjectCertDir))
+    {
+        TArray<FString> Found;
+        IFileManager::Get().FindFiles(Found, *(ProjectCertDir / TEXT("*.pem")), true, false);
+        IFileManager::Get().FindFiles(Found, *(ProjectCertDir / TEXT("*.crt")), true, false);
+        IFileManager::Get().FindFiles(Found, *(ProjectCertDir / TEXT("*.cer")), true, false);
+        Found.Sort();
+        for (const FString& Name : Found)
+        {
+            Result.Add(ProjectCertDir / Name);
+        }
+    }
+    return Result;
 }

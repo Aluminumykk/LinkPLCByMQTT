@@ -82,9 +82,13 @@ struct LINKPLCBYMQTT_API FMQTTConnectOptions
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MQTT", meta = (InlineEditConditionToggle))
 	bool bUseTLS = false;
 
-	/** CA 证书文件路径（PEM，用于校验 broker 证书；留空走 OpenSSL 默认信任路径） */
+	/** CA 证书文件路径（PEM，用于校验 broker 证书；留空自动用插件内置 Mozilla 公共 CA bundle） */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MQTT", meta = (EditCondition = "bUseTLS"))
 	FString CACertPath;
+
+	/** CA 证书 PEM 文本内容（优先级高于 CACertPath；便于证书放 ini/DataTable/字符串随包分发、热替换） */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MQTT", meta = (EditCondition = "bUseTLS", MultiLine = true))
+	FString CACertPem;
 
 	/** 客户端证书/私钥文件路径（PEM，broker 要求双向认证时成对使用） */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MQTT", meta = (EditCondition = "bUseTLS"))

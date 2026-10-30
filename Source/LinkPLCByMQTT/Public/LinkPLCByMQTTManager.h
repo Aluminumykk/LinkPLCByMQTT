@@ -43,8 +43,13 @@ struct FMQTTConnectSettings
 
     /** TLS（端口通常 8883）：CA 证书/客户端证书均为 PEM 文件路径。 */
     bool bUseTLS = false;
-    /** CA 证书（PEM，用于校验 broker；留空走 OpenSSL 默认信任路径，一般为空即校验失败） */
+    /** CA 证书（PEM 文件路径，用于校验 broker）。
+     *  留空时自动回退到插件内置的 Mozilla 公共 CA bundle（cacert.pem，随插件部署），
+     *  公网 broker 开箱即用；自签名 broker 必须显式提供其 CA 文件。 */
     FString CACertPath;
+    /** CA 证书的 PEM 文本内容（优先级高于 CACertPath；运行时写入 Saved 临时文件后使用，
+     *  便于把证书放在 ini/DataTable/字符串里随包分发、热替换，无需打包证书文件） */
+    FString CACertPem;
     /** 客户端证书/私钥（PEM，broker 要求双向认证时使用，如 test.mosquitto.org:8884） */
     FString ClientCertPath;
     FString ClientKeyPath;
@@ -105,4 +110,13 @@ public:
 
     // 关闭默认连接
     static void CloseDefaultConnection();
+
+    // ---- 证书工具 ----
+
+    // 插件内置 Mozilla 公共 CA bundle（cacert.pem）的绝对路径；文件不存在（未部署）时返回空串
+    static FString GetBundledCACertPath();
+
+    // 枚举可用 CA 证书文件（内置 bundle + 项目根 Certificates/ 目录下的 .pem/.crt/.cer），
+    // 供"逐个证书试连"类测试工具使用
+    static TArray<FString> EnumerateCACertificates();
 };
