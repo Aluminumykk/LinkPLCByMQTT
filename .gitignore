@@ -1,0 +1,8 @@
+# UE build artifacts
+Binaries/
+Intermediate/
+
+# IDE
+.vs/
+.idea/
+*.sln

@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "LinkPLCByMQTT",
+	"Description": "MQTT client minimal-primitive plugin based on libmosquitto 2.1.2 (EPL-2.0 OR EDL-1.0, used under EDL-1.0). Static blocking multi-connection manager (FLinkPLCByMQTTManager) plus a Blueprint function library (ULinkPLCByMQTTBPLibrary): connect, publish, subscribe, unsubscribe, manual network-loop pump and an inbound message queue. No async, no threads, no polling, no UI — async strategy is left to the caller.",
+	"Category": "Communication",
+	"CreatedBy": "",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "LinkPLCByMQTT",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
