@@ -1,6 +1,6 @@
 # LinkPLCByMQTT
 
-基于 Unreal Engine 5.7 的 MQTT 客户端通信插件，底层为开源 [Eclipse Mosquitto](https://mosquitto.org/) 的 libmosquitto 2.1.2 客户端库（双授权 EPL-2.0 / EDL-1.0，本插件按 **EDL-1.0**（BSD-3-Clause）使用；客户端源码直接编入插件，无外部 DLL 依赖）。
+基于 Unreal Engine 5.7 的 MQTT 客户端通信插件，底层为开源 [Eclipse Mosquitto](https://mosquitto.org/) 的 libmosquitto 2.1.2 客户端库（双授权 EPL-2.0 / EDL-1.0，本插件按 **EDL-1.0**（BSD-3-Clause）使用；客户端源码直接编入插件）。TLS 由 OpenSSL 3.5.x 提供（Apache-2.0，两个 DLL 随插件附带）。
 
 - 同时支持 **C++ 调用** 与 **蓝图节点**
 - 支持**多连接**管理（多 broker 并行）
@@ -58,7 +58,7 @@ LinkPLCByMQTT/
 `FMQTTConnectOptions`（即 `InitMQTTConnectionWithOptions` / `ConnectToMQTTWithOptions`）的 TLS 字段：
 
 - `bUseTLS` — 启用 TLS 加密（端口一般为 8883）
-- `CACertPath` — CA 证书（PEM 文件**绝对路径**），用于校验 broker 证书。**留空则使用操作系统证书库**（适合 emqx 等公网 broker）；自签名 broker 必须提供 CA 文件，否则握手被拒
+- `CACertPath` — CA 证书（PEM 文件**绝对路径**），用于校验 broker 证书。自签名 broker 必须提供其 CA 文件，否则握手被拒。留空时回退到 OpenSSL 默认证书路径（`MOSQ_OPT_TLS_USE_OS_CERTS`）——注意 **Windows 上默认路径通常不完整**（不读 Windows 系统证书库），公网 broker（emqx 等）建议显式给一个公共 CA bundle（如 Git 自带的 `mingw64/etc/ssl/certs/ca-bundle.crt` 或 [curl 维护的 cacert.pem](https://curl.se/docs/caextract.html)）
 - `bAllowInsecure` — 跳过**全部**证书校验（证书链 + 主机名），仅限调试，公网慎用
 - `ClientCertPath` / `ClientKeyPath` — 双向认证（mTLS）用的客户端证书/私钥（PEM），不需要则留空
 
@@ -92,6 +92,24 @@ if (ConnId > 0)
     while (FLinkPLCByMQTTManager::TryReadMessage(ConnId, Topic, Payload, QoS, bRetain)) { /* ... */ }
     FLinkPLCByMQTTManager::CloseMQTTConnection(ConnId);  // 或 CloseAllConnections()
 }
+```
+
+TLS / LWT / 持久会话走完整设置版 `FMQTTConnectSettings`（蓝图对应 `FMQTTConnectOptions`）：
+
+```cpp
+FMQTTConnectSettings Settings;
+Settings.Host = TEXT("broker.emqx.io");
+Settings.Port = 8883;
+Settings.ClientId = TEXT("ue-client-01");   // 持久会话时必须固定
+Settings.KeepAliveSeconds = 60;
+Settings.bUseTLS = true;
+Settings.CACertPath = TEXT("C:/certs/ca-bundle.crt");  // 自签 broker 给它的 CA；公网 broker 给公共 CA bundle（Win 上不建议留空）
+Settings.bCleanSession = true;              // false = 持久会话
+// Settings.bUseLWT = true; Settings.LWTTopic = ...; Settings.LWTPayload = ...;
+
+FString Error;
+int32 ConnId = FLinkPLCByMQTTManager::CreateMQTTConnectionWithSettings(Settings, Error);
+// TLS 握手在 Pump 中完成：connect 返回后先 Pump 若干轮再判断 IsConnected
 ```
 
 线程模型：连接表由全局锁保护（仅覆盖查找/增删），每条连接的调用由各自的互斥锁串行化——不同连接可真正并行。libmosquitto 回调（connect/disconnect/message）全部在 `Pump`/连接调用持有的锁内同线程触发，入站消息存入每条连接的收件队列。
