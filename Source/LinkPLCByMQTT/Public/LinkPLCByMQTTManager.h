@@ -40,6 +40,16 @@ struct FMQTTConnectSettings
     TArray<uint8> LWTPayload;
     int32 LWTQoS = 0;
     bool bLWTRetain = false;
+
+    /** TLS（端口通常 8883）：CA 证书/客户端证书均为 PEM 文件路径。 */
+    bool bUseTLS = false;
+    /** CA 证书（PEM，用于校验 broker；留空走 OpenSSL 默认信任路径，一般为空即校验失败） */
+    FString CACertPath;
+    /** 客户端证书/私钥（PEM，broker 要求双向认证时使用，如 test.mosquitto.org:8884） */
+    FString ClientCertPath;
+    FString ClientKeyPath;
+    /** 跳过 broker 证书校验（仅限测试环境；与 CACertPath 二选一） */
+    bool bAllowInsecure = false;
 };
 
 class LINKPLCBYMQTT_API FLinkPLCByMQTTManager

@@ -2,6 +2,8 @@
 
 #include "LinkPLCByMQTT.h"
 #include "LinkPLCByMQTTManager.h"
+#include "Interfaces/IPluginManager.h"
+#include "Misc/Paths.h"
 
 THIRD_PARTY_INCLUDES_START
 #include "mosquitto.h"
@@ -13,6 +15,22 @@ DEFINE_LOG_CATEGORY(LogLinkPLCByMQTT);
 
 void FLinkPLCByMQTTModule::StartupModule()
 {
+#if PLATFORM_WINDOWS
+	// 显式按全路径预载 OpenSSL DLL：libssl/libcrypto 是延迟加载的，
+	// 若按裸名交给系统搜索，可能被 PATH 里其它软件（如 Git\mingw64\bin）的
+	// 同名老版本 DLL 截胡，导致 TLS 校验行为异常。先 crypto 后 ssl。
+	const FString BinDir = FPaths::Combine(
+		IPluginManager::Get().FindPlugin(TEXT("LinkPLCByMQTT"))->GetBaseDir(),
+		TEXT("Binaries"), TEXT("Win64"));
+	for (const TCHAR* DllName : { TEXT("libcrypto-3-x64.dll"), TEXT("libssl-3-x64.dll") })
+	{
+		const FString FullPath = FPaths::Combine(BinDir, DllName);
+		void* Handle = FPlatformProcess::GetDllHandle(*FullPath);
+		UE_LOG(LogLinkPLCByMQTT, Log, TEXT("Preload %s: %s"), DllName,
+			Handle ? TEXT("ok") : *FString::Printf(TEXT("FAILED (%s)"), *FullPath));
+	}
+#endif
+
 	// libmosquitto 直接编译进 LinkPLCByMQTTLibrary 模块（静态链接，无 DLL 预加载）。
 	// 库级初始化只做一次：初始化 Winsock 等全局状态。
 	if (mosquitto_lib_init() != MOSQ_ERR_SUCCESS)

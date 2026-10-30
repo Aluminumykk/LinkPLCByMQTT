@@ -77,4 +77,22 @@ struct LINKPLCBYMQTT_API FMQTTConnectOptions
 	/** 遗嘱是否作为保留消息 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MQTT", meta = (EditCondition = "bUseLWT"))
 	bool bLWTRetain = false;
+
+	/** 是否使用 TLS 加密（端口通常 8883） */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MQTT", meta = (InlineEditConditionToggle))
+	bool bUseTLS = false;
+
+	/** CA 证书文件路径（PEM，用于校验 broker 证书；留空走 OpenSSL 默认信任路径） */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MQTT", meta = (EditCondition = "bUseTLS"))
+	FString CACertPath;
+
+	/** 客户端证书/私钥文件路径（PEM，broker 要求双向认证时成对使用） */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MQTT", meta = (EditCondition = "bUseTLS"))
+	FString ClientCertPath;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MQTT", meta = (EditCondition = "bUseTLS"))
+	FString ClientKeyPath;
+
+	/** 跳过 broker 证书校验（仅限测试环境，有中间人风险） */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MQTT", meta = (EditCondition = "bUseTLS"))
+	bool bAllowInsecure = false;
 };

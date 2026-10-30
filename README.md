@@ -6,7 +6,7 @@
 - 支持**多连接**管理（多 broker 并行）
 - 连接选项齐全：**LWT 遗嘱**、**持久会话**（clean session 开关）、认证、心跳均可配置
 - 只提供基础通信原语：连接、发布、订阅、取消订阅、手动网络循环（Pump）、入站消息队列。**不做异步、线程、轮询、点表、断线重连**——异步与重连策略由调用方自行组织
-- 当前为 **TCP 明文**（1883），不含 TLS（8883）/ WebSocket / SRV 查询（对应 libmosquitto 特性在编译期已关闭）
+- 支持 **TCP 明文**（1883）与 **TLS**（8883，OpenSSL 3.5.x，随插件附带 DLL）；不含 WebSocket / SRV 查询（对应 libmosquitto 特性在编译期已关闭）
 
 ## 与 S7/Modbus 插件的关键差异
 
@@ -27,10 +27,12 @@ LinkPLCByMQTT/
     │   ├── Public/              # Manager / BPLibrary / MQTTDataTypes
     │   └── Private/             # 实现
     └── ThirdParty/
-        └── LinkPLCByMQTTLibrary/  # libmosquitto 客户端源码模块（直接编译进插件）
-            ├── LICENSE.txt / edl-v10 / epl-v20   # 授权文本
-            ├── config.h
-            └── mosquitto/{include,lib,libcommon,deps}
+        ├── LinkPLCByMQTTLibrary/  # libmosquitto 客户端源码模块（直接编译进插件）
+        │   ├── LICENSE.txt / edl-v10 / epl-v20   # 授权文本
+        │   ├── config.h
+        │   └── mosquitto/{include,lib,libcommon,deps}
+        └── OpenSSL/               # OpenSSL 3.5.x 预编译子集（TLS 用，Apache-2.0）
+            ├── include/  lib/Win64/  bin/Win64/  LICENSE.txt
 ```
 
 ## 安装
@@ -50,6 +52,17 @@ LinkPLCByMQTT/
 - `InitMQTTConnectionWithOptions(Options)` / `ConnectToMQTTWithOptions(Options)` — 完整选项版（`FMQTTConnectOptions` 结构体）：额外支持 **持久会话**（`bCleanSession=false`，须固定 ClientId，离线期间的 QoS1/2 消息由 broker 保留、重连后补投）与 **LWT 遗嘱**（`bUseLWT` + `LWTTopic/LWTPayload/LWTQoS/bLWTRetain`，连接异常中断时由 broker 代为发布；主动 Disconnect 不触发）
 - `DisconnectMQTT(ConnectionId)` / `CloseMQTTConnection` / `IsConnected` / `IsMQTTConnected(ConnectionId)`
 - `GetLastErrorMessage(ConnectionId=0)` — 最近一次失败的错误文本（掉线时也记录断开原因）
+
+**TLS（8883）**
+
+`FMQTTConnectOptions`（即 `InitMQTTConnectionWithOptions` / `ConnectToMQTTWithOptions`）的 TLS 字段：
+
+- `bUseTLS` — 启用 TLS 加密（端口一般为 8883）
+- `CACertPath` — CA 证书（PEM 文件**绝对路径**），用于校验 broker 证书。**留空则使用操作系统证书库**（适合 emqx 等公网 broker）；自签名 broker 必须提供 CA 文件，否则握手被拒
+- `bAllowInsecure` — 跳过**全部**证书校验（证书链 + 主机名），仅限调试，公网慎用
+- `ClientCertPath` / `ClientKeyPath` — 双向认证（mTLS）用的客户端证书/私钥（PEM），不需要则留空
+
+注意：TLS 握手在首次 `PumpMQTT` 中完成，因此 TLS 连接建立后要先 Pump 再判断 `IsMQTTConnected`；连接 IP 字面量（如 `127.0.0.1`）时 broker 证书的 SAN 必须包含 `IP:xxx` 条目（仅 `DNS:localhost` 不够）。
 
 **发布/订阅**（所有节点都带 `ConnectionId`，**0 = 默认连接**）
 
@@ -88,7 +101,8 @@ if (ConnId > 0)
 ## 许可
 
 - 本插件代码：MIT License
-- libmosquitto：EPL-2.0 **或** EDL-1.0 双授权（本插件选择 EDL-1.0/BSD-3-Clause），授权文本见 `Source/ThirdParty/LinkPLCByMQTTLibrary/` 下的 `LICENSE.txt`、`edl-v10`、`epl-v20`；源码未做修改，仅裁剪了未启用的特性文件（TLS/WS/SRV/threading）
+- libmosquitto：EPL-2.0 **或** EDL-1.0 双授权（本插件选择 EDL-1.0/BSD-3-Clause），授权文本见 `Source/ThirdParty/LinkPLCByMQTTLibrary/` 下的 `LICENSE.txt`、`edl-v10`、`epl-v20`；裁剪了未启用的特性文件（WS/SRV/threading），另有一处 Windows 修复补丁：`tls_mosq.c` 中 `InetPton` → `InetPtonA`（UE 构建全局定义 UNICODE，宏会解析成宽字符版导致 IP 字面量 SAN 校验失败）
+- OpenSSL 3.5.x（FireDaemon 预编译）：Apache-2.0，授权文本见 `Source/ThirdParty/OpenSSL/LICENSE.txt`；`libssl-3-x64.dll` / `libcrypto-3-x64.dll` 随插件部署到 `Binaries/Win64` 并在模块启动时按全路径预载（避免被 PATH 中同名老 DLL 劫持）
 
 ## 平台说明
 

@@ -129,6 +129,20 @@ namespace
         Queued.bRetain = Message->retain;
         Entry->Inbox.Add(MoveTemp(Queued));
     }
+
+    /** libmosquitto 日志回调：转发到 UE 日志（TLS 握手等内部错误的唯一可见渠道）。 */
+    void OnLogCb(mosquitto* Mosq, void* Obj, int Level, const char* Message)
+    {
+        const FString Text = Message ? FString(ANSI_TO_TCHAR(Message)) : FString();
+        if (Level == MOSQ_LOG_ERR)
+        {
+            UE_LOG(LogLinkPLCByMQTT, Warning, TEXT("mosquitto: %s"), *Text);
+        }
+        else
+        {
+            UE_LOG(LogLinkPLCByMQTT, Verbose, TEXT("mosquitto: %s"), *Text);
+        }
+    }
 }
 
 int32 FLinkPLCByMQTTManager::CreateMQTTConnection(const FString& Host, int32 Port, const FString& ClientId, int32 KeepAliveSeconds, const FString& Username, const FString& Password, FString& OutErrorMessage)
@@ -156,6 +170,11 @@ int32 FLinkPLCByMQTTManager::CreateMQTTConnectionWithSettings(const FMQTTConnect
         OutErrorMessage = TEXT("bUseLWT=true requires a non-empty LWTTopic.");
         return -1;
     }
+    if (Settings.bUseTLS && (Settings.ClientCertPath.IsEmpty() != Settings.ClientKeyPath.IsEmpty()))
+    {
+        OutErrorMessage = TEXT("TLS client auth requires both ClientCertPath and ClientKeyPath.");
+        return -1;
+    }
 
     auto ClientIdAnsi = StringCast<ANSICHAR>(*Settings.ClientId);
 
@@ -171,6 +190,7 @@ int32 FLinkPLCByMQTTManager::CreateMQTTConnectionWithSettings(const FMQTTConnect
     mosquitto_connect_callback_set(Entry->Mosq, &OnConnectCb);
     mosquitto_disconnect_callback_set(Entry->Mosq, &OnDisconnectCb);
     mosquitto_message_callback_set(Entry->Mosq, &OnMessageCb);
+    mosquitto_log_callback_set(Entry->Mosq, &OnLogCb);
 
     if (!Settings.Username.IsEmpty())
     {
@@ -181,6 +201,46 @@ int32 FLinkPLCByMQTTManager::CreateMQTTConnectionWithSettings(const FMQTTConnect
         {
             OutErrorMessage = MQTTErrorText(Rc);
             return -1;
+        }
+    }
+
+    // TLS 必须在 connect 之前设置；CA/客户端证书为 PEM 文件路径
+    if (Settings.bUseTLS)
+    {
+        // 注意：全部证书路径为空时不能调 mosquitto_tls_set（会返回 MOSQ_ERR_INVAL），
+        // 但此时必须设置 MOSQ_OPT_TLS_USE_OS_CERTS——libmosquitto 只有在
+        // cafile/capath/psk/os_certs 任一存在时才创建 SSL_CTX，否则退化为明文 TCP
+        // （TLS 端口上会握手失败 "wrong version number"）。
+        const bool bHasCertPaths = !Settings.CACertPath.IsEmpty()
+            || !Settings.ClientCertPath.IsEmpty() || !Settings.ClientKeyPath.IsEmpty();
+        if (!bHasCertPaths)
+        {
+            mosquitto_int_option(Entry->Mosq, MOSQ_OPT_TLS_USE_OS_CERTS, 1);
+        }
+        if (bHasCertPaths)
+        {
+            auto CACertAnsi = StringCast<ANSICHAR>(*Settings.CACertPath);
+            auto ClientCertAnsi = StringCast<ANSICHAR>(*Settings.ClientCertPath);
+            auto ClientKeyAnsi = StringCast<ANSICHAR>(*Settings.ClientKeyPath);
+            const int Rc = mosquitto_tls_set(Entry->Mosq,
+                Settings.CACertPath.IsEmpty() ? nullptr : CACertAnsi.Get(), nullptr,
+                Settings.ClientCertPath.IsEmpty() ? nullptr : ClientCertAnsi.Get(),
+                Settings.ClientKeyPath.IsEmpty() ? nullptr : ClientKeyAnsi.Get(),
+                nullptr);
+            if (Rc != MOSQ_ERR_SUCCESS)
+            {
+                OutErrorMessage = MQTTErrorText(Rc);
+                return -1;
+            }
+        }
+        if (Settings.bAllowInsecure)
+        {
+            // mosquitto_tls_insecure_set 只跳过主机名检查（tls_insecure 标志），
+            // 证书链验证模式由 tls_cert_reqs 决定（默认 SSL_VERIFY_PEER）。
+            // 真正的"不验证"必须再把 cert_reqs 设为 SSL_VERIFY_NONE（=0，
+            // 本文件不引 OpenSSL 头，直接传 0）。
+            mosquitto_tls_insecure_set(Entry->Mosq, true);
+            mosquitto_tls_opts_set(Entry->Mosq, 0, NULL, NULL);
         }
     }
 
@@ -206,17 +266,18 @@ int32 FLinkPLCByMQTTManager::CreateMQTTConnectionWithSettings(const FMQTTConnect
         return -1;
     }
 
-    // 阻塞式 connect 成功后 on_connect 已同步触发，bConnected 已置位
-    Entry->bConnected.store(true);
+    // 注意：不要在连接建立前把 bConnected 置真——TLS 握手是在后续 Pump 驱动的
+    // 网络循环里完成的，握手/证书校验失败由 on_disconnect 回调落地。
+    // （明文 TCP 下阻塞式 connect 会同步触发 on_connect，由回调置位。）
 
     FScopeLock TableLock(&GConnectionsMutex);
     const int32 ConnectionId = GNextConnectionId++;
     GConnections.Add(ConnectionId, MoveTemp(Entry));
 
-    UE_LOG(LogLinkPLCByMQTT, Log, TEXT("MQTT connection %d opened: %s:%d (ClientId=%s, CleanSession=%d, LWT=%d)"),
+    UE_LOG(LogLinkPLCByMQTT, Log, TEXT("MQTT connection %d opened: %s:%d (ClientId=%s, CleanSession=%d, LWT=%d, TLS=%d)"),
         ConnectionId, *Settings.Host, Settings.Port,
         Settings.ClientId.IsEmpty() ? TEXT("<auto>") : *Settings.ClientId,
-        Settings.bCleanSession ? 1 : 0, Settings.bUseLWT ? 1 : 0);
+        Settings.bCleanSession ? 1 : 0, Settings.bUseLWT ? 1 : 0, Settings.bUseTLS ? 1 : 0);
     return ConnectionId;
 }
 

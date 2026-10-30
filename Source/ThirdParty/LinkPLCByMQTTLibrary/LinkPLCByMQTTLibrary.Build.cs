@@ -4,8 +4,10 @@ using System.IO;
 using UnrealBuildTool;
 
 // libmosquitto 2.1.2 (EPL-2.0 OR EDL-1.0，本插件按 EDL-1.0/BSD-3-Clause 使用) 客户端库源码直接编入本模块。
-// 只保留 TCP 客户端能力：WITH_TLS / WITH_SRV / WITH_WEBSOCKETS / WITH_THREADING 全部关闭
+// 保留 TCP + TLS 客户端能力：WITH_SRV / WITH_WEBSOCKETS / WITH_THREADING 关闭
 // (对应源码文件已移除或经 #ifdef 编译为空)，线程模型由 UE 侧管理器决定。
+// TLS 依赖 OpenSSL 3.5.9 LTS 预编译包（FireDaemon 发行，Apache-2.0），
+// 头文件/导入库/运行时 DLL 随插件置于 Source/ThirdParty/OpenSSL/。
 // config.h 由仓库根目录的 Makefile 版改写，授权文本见本目录 LICENSE.txt / edl-v10 / epl-v20。
 public class LinkPLCByMQTTLibrary : ModuleRules
 {
@@ -40,6 +42,9 @@ public class LinkPLCByMQTTLibrary : ModuleRules
 		// CMake 构建时由工程注入的版本号,这里保持与源码版本一致
 		PrivateDefinitions.Add("VERSION=\"2.1.2\"");
 
+		// 启用 TLS（OpenSSL）；TLS-PSK 不启用
+		PrivateDefinitions.Add("WITH_TLS");
+
 		PublicDefinitions.Add("_CRT_SECURE_NO_WARNINGS");
 
 		// UBT 生成的 Definitions.c.h 会把 LINKPLCBYMQTTLIBRARY_API 定义为 DLLEXPORT,
@@ -51,6 +56,21 @@ public class LinkPLCByMQTTLibrary : ModuleRules
 		{
 			// libmosquitto TCP 走 Winsock2
 			PublicSystemLibraries.Add("ws2_32.lib");
+
+			// ---- TLS: OpenSSL 3.5.9 LTS（FireDaemon 预编译，/MT 静态 CRT）----
+			string OpenSSLDir = Path.Combine(ModuleDirectory, "..", "OpenSSL");
+			PrivateIncludePaths.Add(Path.Combine(OpenSSLDir, "include"));
+			PublicAdditionalLibraries.Add(Path.Combine(OpenSSLDir, "lib", "Win64", "libssl.lib"));
+			PublicAdditionalLibraries.Add(Path.Combine(OpenSSLDir, "lib", "Win64", "libcrypto.lib"));
+
+			// 运行时 DLL 随插件模块目录（Binaries/Win64）部署；延迟加载，仅在用到 TLS 时才载入
+			PublicDelayLoadDLLs.Add("libssl-3-x64.dll");
+			PublicDelayLoadDLLs.Add("libcrypto-3-x64.dll");
+			string BinDir = Path.Combine(PluginDirectory, "Binaries", "Win64");
+			RuntimeDependencies.Add(Path.Combine(BinDir, "libssl-3-x64.dll"),
+				Path.Combine(OpenSSLDir, "bin", "Win64", "libssl-3-x64.dll"));
+			RuntimeDependencies.Add(Path.Combine(BinDir, "libcrypto-3-x64.dll"),
+				Path.Combine(OpenSSLDir, "bin", "Win64", "libcrypto-3-x64.dll"));
 		}
 	}
 }

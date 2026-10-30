@@ -24,7 +24,8 @@ public class LinkPLCByMQTT : ModuleRules
 			new string[]
 			{
 				"CoreUObject",
-				"Engine"
+				"Engine",
+				"Projects" // IPluginManager：预载 OpenSSL DLL 时定位插件目录
 			}
 			);
 	}

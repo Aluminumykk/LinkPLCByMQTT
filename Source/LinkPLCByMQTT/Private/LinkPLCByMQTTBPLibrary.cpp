@@ -18,6 +18,11 @@ namespace
         Settings.LWTTopic = Options.LWTTopic;
         Settings.LWTQoS = static_cast<int32>(Options.LWTQoS);
         Settings.bLWTRetain = Options.bLWTRetain;
+        Settings.bUseTLS = Options.bUseTLS;
+        Settings.CACertPath = Options.CACertPath;
+        Settings.ClientCertPath = Options.ClientCertPath;
+        Settings.ClientKeyPath = Options.ClientKeyPath;
+        Settings.bAllowInsecure = Options.bAllowInsecure;
         if (Options.bUseLWT)
         {
             FTCHARToUTF8 Utf8(*Options.LWTPayload);

@@ -70,8 +70,11 @@ int tls__set_verify_hostname(struct mosquitto *mosq, const char *hostname)
 	}
 #endif
 #ifdef WIN32
-	ipv6_ok = InetPton(AF_INET6, hostname, &ipv6_addr);
-	ipv4_ok = InetPton(AF_INET, hostname, &ipv4_addr);
+	/* UE 构建环境全局定义 UNICODE，InetPton 宏会解析成宽字符版 InetPtonW，
+	 * 而 hostname 是 char*，必须用显式的 ANSI 版本 InetPtonA，
+	 * 否则 IP 字面量解析失败、退回 DNS 主机名校验，IP SAN 证书验证不过。 */
+	ipv6_ok = InetPtonA(AF_INET6, hostname, &ipv6_addr);
+	ipv4_ok = InetPtonA(AF_INET, hostname, &ipv4_addr);
 #else
 	ipv6_ok = inet_pton(AF_INET6, hostname, &ipv6_addr);
 	ipv4_ok = inet_pton(AF_INET, hostname, &ipv4_addr);
