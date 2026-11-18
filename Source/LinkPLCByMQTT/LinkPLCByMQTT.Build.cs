@@ -23,8 +23,6 @@ public class LinkPLCByMQTT : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"CoreUObject",
-				"Engine",
 				"Projects" // IPluginManager：预载 OpenSSL DLL 时定位插件目录
 			}
 			);

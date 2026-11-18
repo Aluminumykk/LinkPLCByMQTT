@@ -280,7 +280,7 @@ int32 FLinkPLCByMQTTManager::CreateMQTTConnectionWithSettings(const FMQTTConnect
             // 真正的"不验证"必须再把 cert_reqs 设为 SSL_VERIFY_NONE（=0，
             // 本文件不引 OpenSSL 头，直接传 0）。
             mosquitto_tls_insecure_set(Entry->Mosq, true);
-            mosquitto_tls_opts_set(Entry->Mosq, 0, NULL, NULL);
+            mosquitto_tls_opts_set(Entry->Mosq, 0, nullptr, nullptr);
         }
     }
 
