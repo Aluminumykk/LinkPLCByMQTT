@@ -29,7 +29,7 @@
 	"LocalizationTargets": [
 		{
 			"Name": "LinkPLCByMQTT",
-			"LoadingPolicy": "Editor",
+			"LoadingPolicy": "Always",
 			"ConfigGenerationPolicy": "Never"
 		}
 	]
