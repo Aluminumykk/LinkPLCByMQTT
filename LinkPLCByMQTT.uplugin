@@ -19,6 +19,11 @@
 			"Name": "LinkPLCByMQTT",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "LinkPLCByMQTTLibrary",
+			"Type": "Runtime",
+			"LoadingPhase": "None"
 		}
 	]
 }
