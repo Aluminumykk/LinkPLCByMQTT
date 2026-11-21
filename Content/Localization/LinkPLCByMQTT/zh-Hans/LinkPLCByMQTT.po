@@ -1,0 +1,266 @@
+# LinkPLCByMQTT Chinese (Simplified) translation.
+msgid ""
+msgstr ""
+"Project-Id-Version: LinkPLCByMQTT\n"
+"Language: zh-Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Key:	LinkPLCByMQTTBPLibrary
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary"
+msgid "Link PLCBy MQTTBPLibrary"
+msgstr "LinkPLCByMQTT 蓝图函数库"
+
+#. Key:	LinkPLCByMQTTBPLibrary:InitMQTTConnection
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:InitMQTTConnection"
+msgid "Init MQTTConnection"
+msgstr "初始化 MQTT 连接"
+
+#. Key:	LinkPLCByMQTTBPLibrary:ConnectToMQTT
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:ConnectToMQTT"
+msgid "Connect to MQTT"
+msgstr "连接 MQTT（多连接，返回连接 ID）"
+
+#. Key:	LinkPLCByMQTTBPLibrary:InitMQTTConnectionWithOptions
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:InitMQTTConnectionWithOptions"
+msgid "Init MQTTConnection with Options"
+msgstr "初始化 MQTT 连接（完整选项）"
+
+#. Key:	LinkPLCByMQTTBPLibrary:ConnectToMQTTWithOptions
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:ConnectToMQTTWithOptions"
+msgid "Connect to MQTTWith Options"
+msgstr "连接 MQTT（完整选项，返回连接 ID）"
+
+#. Key:	LinkPLCByMQTTBPLibrary:DisconnectMQTT
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:DisconnectMQTT"
+msgid "Disconnect MQTT"
+msgstr "断开 MQTT 连接"
+
+#. Key:	LinkPLCByMQTTBPLibrary:IsMQTTConnected
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:IsMQTTConnected"
+msgid "Is MQTTConnected"
+msgstr "MQTT 是否已连接"
+
+#. Key:	LinkPLCByMQTTBPLibrary:CloseMQTTConnection
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:CloseMQTTConnection"
+msgid "Close MQTTConnection"
+msgstr "关闭 MQTT 连接"
+
+#. Key:	LinkPLCByMQTTBPLibrary:IsConnected
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:IsConnected"
+msgid "Is Connected"
+msgstr "是否已连接"
+
+#. Key:	LinkPLCByMQTTBPLibrary:GetLastErrorMessage
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:GetLastErrorMessage"
+msgid "Get Last Error Message"
+msgstr "获取最近错误信息"
+
+#. Key:	LinkPLCByMQTTBPLibrary:PublishMQTTMessage
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:PublishMQTTMessage"
+msgid "Publish MQTTMessage"
+msgstr "发布 MQTT 消息（字节）"
+
+#. Key:	LinkPLCByMQTTBPLibrary:PublishMQTTString
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:PublishMQTTString"
+msgid "Publish MQTTString"
+msgstr "发布 MQTT 消息（字符串）"
+
+#. Key:	LinkPLCByMQTTBPLibrary:SubscribeMQTT
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:SubscribeMQTT"
+msgid "Subscribe MQTT"
+msgstr "订阅 MQTT 主题"
+
+#. Key:	LinkPLCByMQTTBPLibrary:UnsubscribeMQTT
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:UnsubscribeMQTT"
+msgid "Unsubscribe MQTT"
+msgstr "取消订阅"
+
+#. Key:	LinkPLCByMQTTBPLibrary:PumpMQTT
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:PumpMQTT"
+msgid "Pump MQTT"
+msgstr "驱动网络循环（Pump）"
+
+#. Key:	LinkPLCByMQTTBPLibrary:TryReadMQTTMessage
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:TryReadMQTTMessage"
+msgid "Try Read MQTTMessage"
+msgstr "读取入站消息（字节）"
+
+#. Key:	LinkPLCByMQTTBPLibrary:TryReadMQTTString
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:TryReadMQTTString"
+msgid "Try Read MQTTString"
+msgstr "读取入站消息（字符串）"
+
+#. Key:	LinkPLCByMQTTBPLibrary:GetBundledCACertPath
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:GetBundledCACertPath"
+msgid "Get Bundled CACert Path"
+msgstr "获取内置 CA 证书 Bundle 路径"
+
+#. Key:	LinkPLCByMQTTBPLibrary:EnumerateCACertificates
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectDisplayNames,LinkPLCByMQTTBPLibrary:EnumerateCACertificates"
+msgid "Enumerate CACertificates"
+msgstr "枚举可用 CA 证书"
+
+#. Key:	MQTTConnectOptions
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions"
+msgid "MQTTConnect Options"
+msgstr "MQTT 连接选项"
+
+#. Key:	MQTTConnectOptions:Host
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:Host"
+msgid "Host"
+msgstr "Broker 地址"
+
+#. Key:	MQTTConnectOptions:Port
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:Port"
+msgid "Port"
+msgstr "端口"
+
+#. Key:	MQTTConnectOptions:ClientId
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:ClientId"
+msgid "Client Id"
+msgstr "客户端 ID"
+
+#. Key:	MQTTConnectOptions:KeepAliveSeconds
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:KeepAliveSeconds"
+msgid "Keep Alive Seconds"
+msgstr "心跳间隔（秒）"
+
+#. Key:	MQTTConnectOptions:Username
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:Username"
+msgid "Username"
+msgstr "用户名"
+
+#. Key:	MQTTConnectOptions:Password
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:Password"
+msgid "Password"
+msgstr "密码"
+
+#. Key:	MQTTConnectOptions:bCleanSession
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:bCleanSession"
+msgid "Clean Session"
+msgstr "清理会话"
+
+#. Key:	MQTTConnectOptions:bUseLWT
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:bUseLWT"
+msgid "Use LWT"
+msgstr "启用 LWT 遗嘱"
+
+#. Key:	MQTTConnectOptions:LWTTopic
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:LWTTopic"
+msgid "LWTTopic"
+msgstr "遗嘱主题"
+
+#. Key:	MQTTConnectOptions:LWTPayload
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:LWTPayload"
+msgid "LWTPayload"
+msgstr "遗嘱内容"
+
+#. Key:	MQTTConnectOptions:LWTQoS
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:LWTQoS"
+msgid "LWTQo S"
+msgstr "遗嘱 QoS"
+
+#. Key:	MQTTConnectOptions:bLWTRetain
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:bLWTRetain"
+msgid "LWTRetain"
+msgstr "遗嘱作为保留消息"
+
+#. Key:	MQTTConnectOptions:bUseTLS
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:bUseTLS"
+msgid "Use TLS"
+msgstr "启用 TLS 加密"
+
+#. Key:	MQTTConnectOptions:CACertPath
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:CACertPath"
+msgid "CACert Path"
+msgstr "CA 证书路径"
+
+#. Key:	MQTTConnectOptions:CACertPem
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:CACertPem"
+msgid "CACert Pem"
+msgstr "CA 证书 PEM 文本"
+
+#. Key:	MQTTConnectOptions:ClientCertPath
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:ClientCertPath"
+msgid "Client Cert Path"
+msgstr "客户端证书路径"
+
+#. Key:	MQTTConnectOptions:ClientKeyPath
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:ClientKeyPath"
+msgid "Client Key Path"
+msgstr "客户端私钥路径"
+
+#. Key:	MQTTConnectOptions:bAllowInsecure
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h)
+msgctxt "UObjectDisplayNames,MQTTConnectOptions:bAllowInsecure"
+msgid "Allow Insecure"
+msgstr "跳过证书校验（仅限测试）"
+
+#. Key:	EMQTTQoS.AtMostOnce
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h(12))
+msgctxt "UObjectDisplayNames,EMQTTQoS.AtMostOnce"
+msgid "QoS 0 - 最多一次 (At Most Once)"
+msgstr "QoS 0 - 最多一次"
+
+#. Key:	EMQTTQoS.AtLeastOnce
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h(13))
+msgctxt "UObjectDisplayNames,EMQTTQoS.AtLeastOnce"
+msgid "QoS 1 - 至少一次 (At Least Once)"
+msgstr "QoS 1 - 至少一次"
+
+#. Key:	EMQTTQoS.ExactlyOnce
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h(14))
+msgctxt "UObjectDisplayNames,EMQTTQoS.ExactlyOnce"
+msgid "QoS 2 - 恰好一次 (Exactly Once)"
+msgstr "QoS 2 - 恰好一次"
+
+#. Key:	MQTT
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h / Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectCategory,MQTT"
+msgid "MQTT"
+msgstr "MQTT"
+
+#. Key:	LinkPLCByMQTT
+#. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/LinkPLCByMQTTBPLibrary.h)
+msgctxt "UObjectCategory,LinkPLCByMQTT"
+msgid "LinkPLCByMQTT"
+msgstr "LinkPLCByMQTT"
