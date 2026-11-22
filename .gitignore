@@ -6,3 +6,7 @@ Intermediate/
 .vs/
 .idea/
 *.sln
+
+# Python 工具缓存
+__pycache__/
+*.pyc
