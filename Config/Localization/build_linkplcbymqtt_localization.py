@@ -19,6 +19,9 @@ locres / locmeta 由本脚本按 UE5.7 引擎源码格式直接生成（不跑 c
   - Runtime/Core/Private/Internationalization/TextLocalizationResource.cpp
   - Runtime/Core/Private/Hash/CityHash.cpp
 格式：ELocResVersion::Optimized_CityHash64_UTF16 (=3)，FTextKey = CityHash64(UTF-16LE) + GetTypeHash(u64)。
+  注意（2026-11-22 核实）：v3 的 FTextKey 走 SerializeWithHash —— 写的是 4 字节 hash **加** 明文
+  SaveKeyString（TextKey.cpp 实测，引擎生成物逐字节一致）；只写 hash 不写明文会让引擎按 FString
+  长度误读 KeyCount、流错位加载失败。本脚本 hash + serialize_fstring 的写法是正确的，勿改。
 
 条目来源（运行时 key 规则，参照 Charts extract_charts_entries.py / 插件优化.md 坑 #4/#5）：
   - 显示名 ns=UObjectDisplayNames，key=<UHT 剥前缀类名>:<属性名>（类本身 key=<类名>，
