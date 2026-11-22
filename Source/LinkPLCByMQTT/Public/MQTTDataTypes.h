@@ -9,9 +9,9 @@
 UENUM(BlueprintType)
 enum class EMQTTQoS : uint8
 {
-	AtMostOnce UMETA(DisplayName = "QoS 0 - 最多一次 (At Most Once)"),   // 最多一次,可能丢失
-	AtLeastOnce UMETA(DisplayName = "QoS 1 - 至少一次 (At Least Once)"), // 至少一次,可能重复
-	ExactlyOnce UMETA(DisplayName = "QoS 2 - 恰好一次 (Exactly Once)")   // 恰好一次,开销最大
+	AtMostOnce UMETA(DisplayName = "QoS 0 - At Most Once"),   // 最多一次,可能丢失
+	AtLeastOnce UMETA(DisplayName = "QoS 1 - At Least Once"), // 至少一次,可能重复
+	ExactlyOnce UMETA(DisplayName = "QoS 2 - Exactly Once")   // 恰好一次,开销最大
 };
 
 /**

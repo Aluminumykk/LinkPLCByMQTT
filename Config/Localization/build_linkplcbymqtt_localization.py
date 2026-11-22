@@ -199,11 +199,11 @@ ENTRIES = [
 
     # ---- UENUM EMQTTQoS 枚举值（source = UMETA(DisplayName) 原文）----
     {"ns": "UObjectDisplayNames", "key": "EMQTTQoS.AtMostOnce",
-     "en": "QoS 0 - 最多一次 (At Most Once)", "zh": "QoS 0 - 最多一次", "path": _DT + "(12)"},
+     "en": "QoS 0 - At Most Once", "zh": "QoS 0 - 最多一次", "path": _DT + "(12)"},
     {"ns": "UObjectDisplayNames", "key": "EMQTTQoS.AtLeastOnce",
-     "en": "QoS 1 - 至少一次 (At Least Once)", "zh": "QoS 1 - 至少一次", "path": _DT + "(13)"},
+     "en": "QoS 1 - At Least Once", "zh": "QoS 1 - 至少一次", "path": _DT + "(13)"},
     {"ns": "UObjectDisplayNames", "key": "EMQTTQoS.ExactlyOnce",
-     "en": "QoS 2 - 恰好一次 (Exactly Once)", "zh": "QoS 2 - 恰好一次", "path": _DT + "(14)"},
+     "en": "QoS 2 - Exactly Once", "zh": "QoS 2 - 恰好一次", "path": _DT + "(14)"},
 
     # ---- Category（UObjectCategory，key = 原始 Category 串；两段均为品牌段，译文保留英文）----
     {"ns": "UObjectCategory", "key": "MQTT", "en": "MQTT", "zh": "MQTT",

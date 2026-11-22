@@ -238,19 +238,19 @@ msgstr "跳过证书校验（仅限测试）"
 #. Key:	EMQTTQoS.AtMostOnce
 #. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h(12))
 msgctxt "UObjectDisplayNames,EMQTTQoS.AtMostOnce"
-msgid "QoS 0 - 最多一次 (At Most Once)"
+msgid "QoS 0 - At Most Once"
 msgstr "QoS 0 - 最多一次"
 
 #. Key:	EMQTTQoS.AtLeastOnce
 #. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h(13))
 msgctxt "UObjectDisplayNames,EMQTTQoS.AtLeastOnce"
-msgid "QoS 1 - 至少一次 (At Least Once)"
+msgid "QoS 1 - At Least Once"
 msgstr "QoS 1 - 至少一次"
 
 #. Key:	EMQTTQoS.ExactlyOnce
 #. SourceLocation:	Manual injection (Source/LinkPLCByMQTT/Public/MQTTDataTypes.h(14))
 msgctxt "UObjectDisplayNames,EMQTTQoS.ExactlyOnce"
-msgid "QoS 2 - 恰好一次 (Exactly Once)"
+msgid "QoS 2 - Exactly Once"
 msgstr "QoS 2 - 恰好一次"
 
 #. Key:	MQTT
